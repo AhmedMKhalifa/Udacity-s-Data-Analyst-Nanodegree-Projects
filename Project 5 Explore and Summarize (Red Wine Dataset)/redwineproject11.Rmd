@@ -1,0 +1,429 @@
+---
+title: "Redwine Project"
+By: Ahmed M.Khalifa
+---
+
+
+```{r}
+knitr::opts_chunk$set(fig.width=9,fig.height=5,fig.path='Figs/',
+                      fig.align='center',tidy=TRUE,
+                      echo=FALSE,warning=FALSE,message=FALSE)
+```
+
+```{r, message=FALSE, packages}
+library(ggplot2)
+library(RColorBrewer)
+library(reshape)
+library(gridExtra)
+```
+
+
+
+```{r echo=FALSE}
+setwd("C:/Users/3arrows/Desktop/New folder")
+#make variable redwine
+redwine <- read.csv("wineQualityReds.csv")
+```
+
+
+## 1-Explore the data
+
+```{r echo=FALSE}
+#the names of variables in the dataset
+names(redwine)
+```
+
+```{r echo=FALSE}
+#the datatype of variables in the dataset
+str(redwine)
+```
+
+
+```{r echo=FALSE}
+#summary of the variables in the dataset
+summary(redwine)
+```
+
+
+## 2-visualize the data
+
+
+First visualize each variable using a boxplot:
+```{r echo=FALSE}
+#visualize each variable using a boxplot
+#Since variable 'x' is an index , we don't visualize it
+wine1 <- melt(redwine[2:13])
+ggplot(wine1, aes(factor(variable), value))+ 
+  geom_boxplot() + facet_wrap(~variable, scale="free")
+```
+
+
+
+Second visualize each variable using a Histogram :
+```{r echo=FALSE}
+#visualize each variable using a Histogram
+ggplot(wine1, aes(x = value)) + 
+    facet_wrap(~variable,scales = "free_x") + 
+    geom_histogram()
+```
+
+
+
+  
+Third visualize the quantile for each variable , i choose 95%:
+```{r echo=FALSE}
+
+#visualize the quantile for each variable by 95%
+
+ ggplot(redwine, aes(x=quality)) + geom_histogram() + 
+  xlim(0, quantile(redwine$quality, c(0.95)))
+
+ ggplot(redwine, aes(x=alcohol)) + geom_histogram() + 
+  xlim(0, quantile(redwine$alcohol, c(0.95)))
+
+ ggplot(redwine, aes(x=sulphates)) + geom_histogram() + 
+  xlim(0, quantile(redwine$sulphates, c(0.95)))
+
+ ggplot(redwine, aes(x=pH)) + geom_histogram() + 
+  xlim(0, quantile(redwine$pH, c(0.95)))
+
+ ggplot(redwine, aes(x=density)) +   geom_histogram() + 
+  xlim(0, quantile(redwine$density, c(0.95)))
+
+ ggplot(redwine, aes(x=total.sulfur.dioxide)) + geom_histogram() + 
+  xlim(0, quantile(redwine$total.sulfur.dioxide, c(0.95)))
+
+ ggplot(redwine, aes(x=free.sulfur.dioxide)) +   geom_histogram() + 
+  xlim(0, quantile(redwine$free.sulfur.dioxide, c(0.95)))
+
+ ggplot(redwine, aes(x=chlorides)) + geom_histogram() + 
+  xlim(0, quantile(redwine$chlorides, c(0.95)))
+
+ ggplot(redwine, aes(x=residual.sugar)) + geom_histogram() + 
+  xlim(0, quantile(redwine$residual.sugar, c(0.95)))
+
+ ggplot(redwine, aes(x=citric.acid)) + geom_histogram() + 
+  xlim(0, quantile(redwine$citric.acid, c(0.95)))
+
+ ggplot(redwine, aes(x=volatile.acidity)) + geom_histogram() + 
+  xlim(0, quantile(redwine$volatile.acidity, c(0.95)))
+
+ ggplot(redwine, aes(x=fixed.acidity)) + geom_histogram() + 
+  xlim(0, quantile(redwine$fixed.acidity, c(0.95)))
+
+```
+
+
+The quality ranking of wine
+
+
+
+```{r echo=FALSE}
+#The quality ranking of wine
+ggplot(redwine, aes(x=quality)) + geom_histogram(binwidth=0.5)
+summary(redwine$quality)
+```
+
+The majority of red wines have a quality ranking of 5 or 6.
+
+
+
+
+visualize the relationship between each pair of variables:
+
+```{r echo=FALSE}
+names(redwine)
+```
+
+
+
+
+
+## 3-Find correlation coefficients with quality for each variable:
+```{r echo=FALSE}
+
+#Find correlation coefficients with quality for each variable
+
+cor.test(redwine$fixed.acidity ,redwine$quality,method='pearson')
+cor.test(redwine$volatile.acidity ,redwine$quality,method='pearson')
+cor.test(redwine$citric.acid ,redwine$quality,method='pearson')
+cor.test(redwine$residual.sugar ,redwine$quality,method='pearson')
+cor.test(redwine$chlorides ,redwine$quality,method='pearson')
+cor.test(redwine$free.sulfur.dioxide ,redwine$quality,method='pearson')
+cor.test(redwine$total.sulfur.dioxide ,redwine$quality,method='pearson')
+cor.test(redwine$density ,redwine$quality,method='pearson')
+cor.test(redwine$pH ,redwine$quality,method='pearson')
+cor.test(redwine$sulphates ,redwine$quality,method='pearson')
+cor.test(redwine$alcohol ,redwine$quality,method='pearson')
+```
+Top 3 correlation with quality:
+1-alchol : 0.48
+2-sulphates : 0.25
+3-citric.acid : 0.23
+
+
+Last 3 corrlation with quality:
+1-volatile.acidity : -0.39
+2-total.sulfur.dioxide : -0.19
+3-density : -0.17
+
+
+
+
+# Explore the variables with negatively correlated with red wine quality:
+
+```{r echo=FALSE}
+#Explore the variables with negatively correlated with red wine quality
+#volatile acidity & alcohol
+ggplot(redwine, aes(volatile.acidity, alcohol)) + geom_jitter(alpha=0.2) + 
+  stat_smooth(method = "lm") + 
+  labs(x="volatile acidity (acetic acid - g / dm^3)" , y="alcohol (% by volume)")
+```
+
+The relationship between volatile acidity & alcohol
+
+
+
+```{r echo=FALSE}
+#Explore the variables with negatively correlated with red wine quality
+#total sulfur dioxide & alcohol
+ggplot(redwine, aes(total.sulfur.dioxide, alcohol)) + geom_jitter(alpha=0.3) + 
+  stat_smooth(method = "lm")  + 
+  labs(x="total sulfur dioxide (mg / dm^3)" , y="alcohol (% by volume)")
+```
+
+The relationship between total sulfur dioxide & alcohol
+
+
+```{r echo=FALSE}
+#Explore the variables with negatively correlated with red wine quality
+#density & alcohol
+
+ggplot(redwine, aes(density, alcohol)) + geom_jitter(alpha=0.3) + 
+  stat_smooth(method = "lm") + 
+  labs(x="density (g / cm^3)" , y="alcohol (% by volume)")
+```
+
+The relationship between density & alcohol
+
+
+# visualize the relationship between alcohol content and sulphates
+
+```{r echo=FALSE}
+#visualize the relationship between alcohol & sulphate as quality afactor
+
+
+ggplot(redwine, aes(x = sulphates, y = alcohol, 
+                 fill=factor(redwine$quality))) + 
+  geom_point(shape=22) +
+  scale_fill_manual(values = c("red", "grey", "seagreen3" , "blue" , "yellow" , "black")) +
+  labs(fill="Quality", 
+       title=" alcohol and sulphate  on red wine quality", 
+       y="alcohol content (% by volume) ", 
+       x= "sulphates (potassium sulphate - g / dm3)")
+```
+
+Different quality wines for both alcohol content and sulphate content. 
+
+
+## 4- Multivariate Plots
+# we make anaylze and multivariate Plots with the 3 variables that has top correlation with quality:
+
+```{r echo=FALSE}
+#Explore the density with alcohol when quality as factor
+
+ggplot(redwine, aes(x=alcohol, fill=factor(quality))) +  geom_density(alpha=0.2)  + 
+  labs(y="density (g / cm^3)" , x="alcohol (% by volume)")
+```
+
+
+
+Here are the summary statistics for alcohol content at each quality level:
+```{r echo=FALSE}
+by(redwine$alcohol, factor(redwine$quality), summary)
+```
+
+
+```{r echo=FALSE}
+#Explore the density with sulphates when quality as factor
+
+ggplot(redwine, aes(x=sulphates, fill=factor(quality))) + 
+  geom_density(alpha=0.2)  + 
+  labs(y="density (g / cm^3)" , x="sulphates (potassium sulphate - g / dm3)")
+```
+
+
+
+```{r echo=FALSE}
+by(redwine$sulphates, factor(redwine$quality), summary)
+```
+
+```{r echo=FALSE}
+#Explore the density with citric acid when quality as factor
+
+ggplot(redwine, aes(x=citric.acid, fill=factor(quality))) +  geom_density(alpha=0.2) + 
+  labs(y="density (g / cm^3)" , x="citric acid (g / dm^3)")
+```
+
+
+```{r echo=FALSE}
+by(redwine$citric.acid, factor(redwine$quality), summary)
+```
+
+
+# visualize the relationship between the 3 (alchol-sulphates-citric.acid) and quality:
+
+```{r echo=FALSE}
+#visualize the relationship between (alchol-sulphates-citric.acid) when quality as factor
+
+ggplot(redwine, aes(x=sulphates, y=citric.acid, size = alcohol, 
+                 color=factor(quality))) + geom_point() + scale_color_brewer()  + 
+  labs(x= "sulphates (potassium sulphate - g / dm3) " , y="citric acid (g / dm^3)")
+```
+
+
+
+# we make anaylze and multivariate Plots with the 3 variables that has less correlation with quality:
+
+```{r echo=FALSE}
+#Explore the density with volatile acidity when quality as factor
+
+ggplot(redwine, aes(x=volatile.acidity, fill=factor(quality))) + geom_density(alpha=0.2) + 
+  labs(x= "volatile acidity (acetic acid - g / dm^3) " , y="density (g / cm^3)")
+```
+
+
+
+```{r echo=FALSE}
+by(redwine$volatile.acidity, factor(redwine$quality), summary)
+```
+
+
+
+```{r echo=FALSE}
+#Explore the density with total.sulfur.dioxide when quality as factor
+
+ggplot(redwine, aes(x=total.sulfur.dioxide, fill=factor(quality))) + geom_density(alpha=0.2) + 
+  labs(y="density (g / cm^3)" , x="total.sulfur.dioxide (mg / dm^3)")
+```
+
+
+
+```{r echo=FALSE}
+by(redwine$total.sulfur.dioxide, factor(redwine$quality), summary)
+```
+
+
+```{r echo=FALSE}
+ggplot(redwine, aes(x=density, fill=factor(quality))) + geom_density(alpha=0.2)
+```
+
+
+
+```{r echo=FALSE}
+by(redwine$density, factor(redwine$quality), summary)
+```
+
+
+# visualize the relationship between the 3 (volatile.acidity - total.sulfur.dioxide- density) and quality:
+
+
+```{r echo=FALSE}
+#visualize the relationship between(volatile.acidity - total.sulfur.dioxide- density) as quality afactor
+
+ggplot(redwine, aes(x=volatile.acidity, y=total.sulfur.dioxide, size = density, 
+                 color=factor(quality))) + geom_point() + scale_color_brewer() + 
+  labs(x= "volatile.acidity (acetic acid - g / dm^3) " , y="total.sulfur.dioxide (mg / dm^3)")
+```
+
+
+
+
+## 5- Summary
+
+
+
+#The biggest correlation coefficient between alcohol and quality.
+
+```{r echo=FALSE}
+#visualize the relationship between density & alcohol as quality afactor
+
+ggplot(redwine, aes(x=alcohol, fill=factor(quality))) +  geom_density(alpha=0.2) + 
+  scale_fill_manual(values = c("red", "grey", "seagreen3" , "blue" , "yellow" , "black")) + 
+  labs(x= "alcohol content (% by volume) " , y="density (g / cm^3)")
+```
+
+
+
+the main anomoly to this trend appears to be red wines having a quality ranking of 5.
+
+the summary statistics for previous relationship:
+```{r echo=FALSE}
+by(redwine$alcohol, redwine$quality, summary)
+```
+
+
+
+### Plot One: visualize the relationship between sulphates & volatile acidity as quality a factor
+
+```{r echo=FALSE}
+#visualize the relationship between sulphates & volatile acidity as quality afactor
+
+
+ggplot(redwine, aes(x=volatile.acidity, y=sulphates, size = alcohol, fill=factor(quality))) + 
+  geom_point(shape=22) + 
+  scale_fill_manual(values = c("red", "grey", "seagreen3" , "blue" , "yellow" , "black")) + 
+  labs(x="volatile acidity (acetic acid - g / dm^3)", y="sulphates (potassium sulphate - g / dm3)") + 
+  theme(plot.title = element_text(size = 14))
+```
+
+
+
+from the figure with see that the higher quality red wines are concentrated in left 
+
+
+the summary statistics for previous relationship:
+```{r echo=FALSE}
+by(redwine$alcohol, redwine$quality, summary)
+```
+
+By sulphate content:
+```{r echo=FALSE}
+by(redwine$sulphates, redwine$quality, summary)
+```
+
+And by volatile.acidity
+```{r echo=FALSE}
+by(redwine$volatile.acidity, redwine$quality, summary)
+```
+
+
+
+### Plot Two: visualize the relationship between alcohol content and sulphates as quality a factor
+
+```{r echo=FALSE}
+#visualize the relationship between alcohol & sulphate as quality afactor
+
+
+ggplot(redwine, aes(x = sulphates, y = alcohol, 
+                 fill=factor(redwine$quality))) + 
+  geom_point(shape=22) +
+  scale_fill_manual(values = c("red", "grey", "seagreen3" , "blue" , "yellow" , "black")) +
+  labs(fill="Quality", 
+       title=" alcohol and sulphate  on red wine quality", 
+       y="alcohol content (% by volume) ", 
+       x= "sulphates (potassium sulphate - g / dm3)")
+```
+
+
+# Reflection
+
+I started by understand the data by expolre it , visulzation , make plots and visualize the quantile of variables, then find correlation coefficients with quality for each variable and visualize the relationship between the 3 top or less cor which lead to a trend between the volatile acidity and alcohol of a wine and its quality. 
+
+
+The red wine dataset consist of 12 attributes , i focused on figure out the realtionship between them
+
+The difficulties are the many combinations of  attributes 
+
+the future step  make  a model to predict quality based on the operations that happend on the attributes in this dataset , the explain of future work is developing a model based on the operations that happend on the attributes in this dataset and add another operations & expolation to predict quality on similar datasets.
+
