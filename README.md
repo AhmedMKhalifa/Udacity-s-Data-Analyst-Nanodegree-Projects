@@ -4,6 +4,8 @@
 
 ### This repository contains My projects for Udacity's Data Analyst Nanodegree.
 
+Project 0: Welcome Explore Weather Trends
+
 Project 1: Explore US Bikeshare Data with Python
 
 Project 2: Investigate a Dataset with Python
